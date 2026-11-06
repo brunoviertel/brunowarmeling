@@ -66,6 +66,7 @@ header {
   font-size: 1.05rem;
   letter-spacing: -0.02em;
   text-decoration: none;
+  white-space: nowrap;
   color: var(--accent-light);
 }
 
@@ -79,6 +80,7 @@ header {
 
 .nav-links a {
   text-decoration: none;
+  white-space: nowrap;
   font-weight: 600;
   font-size: 0.95rem;
   color: var(--ink-soft);
@@ -239,6 +241,150 @@ h1, h2, h3 {
 
 .hero-cta { margin-top: 36px; }
 
+/* ---------- Hero: fundo de código em movimento ---------- */
+.hero-has-code {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  /* ===== AJUSTES FÁCEIS: mude só estes valores ===== */
+
+  /* Opacidade do código, igual em toda a área: 0 (invisível) a 1 (sólido). Sugestão: 0.20 a 0.30 */
+  --code-opacity: 0.24;
+
+  /* Tempo de um ciclo completo da rolagem. Menor = mais rápido. Sugestão: 35s a 50s */
+  --code-duration: 42s;
+
+  /* Tamanho da fonte do código */
+  --code-font-size: 14px;
+
+  /* Espaço entre as colunas de código */
+  --code-gap: 40px;
+
+  /* Escurecimento bem leve nas bordas esquerda e direita:
+     largura da faixa (% da largura do hero) e intensidade (0 = nenhum, 1 = some por completo) */
+  --code-edge-width: 6%;
+  --code-edge-strength: 0.25;
+
+  /* Halo escuro atrás das letras do título, subtítulo e nome (protege a leitura sem criar faixas):
+     tamanho do halo e intensidade (0 = sem halo, 1 = cor de fundo cheia) */
+  --code-halo-size: 10px;
+  --code-halo-strength: 0.9;
+}
+
+.hero-has-code > .wrap {
+  position: relative;
+  z-index: 2;
+}
+
+/* Halo na cor de fundo do site (#0a0a0a): as letras ficam claramente acima do código */
+.hero-has-code > .wrap h1,
+.hero-has-code > .wrap .hero-tagline,
+.hero-has-code > .wrap .hero-sub {
+  text-shadow:
+    0 0 var(--code-halo-size) rgb(10 10 10 / var(--code-halo-strength)),
+    0 0 calc(var(--code-halo-size) * 2) rgb(10 10 10 / var(--code-halo-strength)),
+    0 0 calc(var(--code-halo-size) * 3.5) rgb(10 10 10 / calc(var(--code-halo-strength) * 0.8));
+}
+
+.hero-code {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: var(--code-opacity);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  /* única máscara: escurece levemente as bordas laterais. O centro nunca é escondido. */
+  -webkit-mask-image: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--code-edge-strength))) 0%, #000 var(--code-edge-width), #000 calc(100% - var(--code-edge-width)), rgb(0 0 0 / calc(1 - var(--code-edge-strength))) 100%);
+  mask-image: linear-gradient(to right, rgb(0 0 0 / calc(1 - var(--code-edge-strength))) 0%, #000 var(--code-edge-width), #000 calc(100% - var(--code-edge-width)), rgb(0 0 0 / calc(1 - var(--code-edge-strength))) 100%);
+}
+
+/* O track tem dois blocos idênticos; mover -50% volta ao ponto inicial sem pulo */
+.hero-code-track {
+  animation: code-scroll var(--code-duration) linear infinite;
+  will-change: transform;
+}
+
+.hero-code.is-paused .hero-code-track,
+.hero-code.is-paused .code-cursor {
+  animation-play-state: paused;
+}
+
+/* Cada bloco é uma fileira de colunas. O script repete as colunas até passar da borda direita,
+   então a largura nunca fica vazia (monitor largo incluído). Sem JavaScript, as 3 colunas se
+   distribuem pela largura. */
+.code-block {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--code-gap);
+  padding: 0 24px 48px;
+  overflow: hidden;
+  /* maior que o hero em qualquer largura: o loop nunca deixa um vazio no fim */
+  min-height: 820px;
+}
+
+.hero-code.is-filled .code-block {
+  justify-content: flex-start;
+}
+
+.code-col {
+  flex: 0 0 auto;
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: var(--code-font-size);
+  line-height: 1.75;
+  color: #bdbdbd;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.code-col code { font: inherit; }
+
+.code-col .k { color: var(--accent-light); font-weight: 600; }
+.code-col .s,
+.code-col .n { color: var(--accent-light); }
+.code-col .c { color: #737373; }
+
+.code-cursor {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--accent-light);
+  animation: code-blink 1.1s steps(1, end) infinite;
+}
+
+@keyframes code-scroll {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(0, -50%, 0); }
+}
+
+@keyframes code-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* Celular: fonte menor e código um pouco mais discreto */
+@media (max-width: 640px) {
+  .hero-has-code {
+    --code-opacity: 0.17;
+    --code-font-size: 12px;
+    --code-gap: 28px;
+    --code-edge-width: 4%;
+    --code-halo-size: 8px;
+  }
+
+  .code-block { min-height: 700px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-code-track,
+  .code-cursor { animation: none; }
+  .hero-code-track { will-change: auto; }
+}
+
 /* ---------- Sobre (também usada para seções com fundo alternado) ---------- */
 .sobre {
   background: var(--bg-alt);
@@ -256,6 +402,95 @@ h1, h2, h3 {
   font-size: 1.1rem;
   color: var(--ink-soft);
   margin-top: 20px;
+}
+
+/* ---------- Sobre (redesenho): título grande + duas colunas ---------- */
+.about {
+  padding: 128px 0;
+}
+
+.about .eyebrow {
+  margin-bottom: 28px;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.about-title {
+  font-size: clamp(2rem, 4.2vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.about-accent {
+  color: var(--accent-light);
+  white-space: nowrap; /* "sob medida" nunca quebra em duas linhas */
+}
+
+.about-body { max-width: 55ch; }
+
+.about .about-lead {
+  margin: 0;
+  font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+/* Filete fino e discreto, com um pequeno traço na cor de destaque */
+.about .about-closing {
+  position: relative;
+  margin: 32px 0 0;
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  font-size: clamp(1.0625rem, 1.4vw, 1.1875rem);
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.about .about-closing::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: var(--accent-light);
+}
+
+@media (min-width: 900px) {
+  .about-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 72px;
+  }
+
+  /* alinha o início do texto da direita com a primeira linha do título */
+  .about-body { padding-top: 0.6em; }
+}
+
+@media (max-width: 640px) {
+  .about { padding: 88px 0; }
+  .about .eyebrow { margin-bottom: 20px; }
+  .about-grid { gap: 28px; }
+}
+
+/* Entrada suave (fade + pequeno deslize). O script só ativa isso se a pessoa não pediu menos movimento;
+   sem JavaScript, o texto aparece normalmente. */
+.about.reveal-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.about.reveal-ready.is-visible [data-reveal] {
+  opacity: 1;
+  transform: none;
 }
 
 /* ---------- Serviços ---------- */
@@ -388,6 +623,129 @@ h1, h2, h3 {
   color: #fff;
 }
 
+/* ---------- Portfólio: "Ver mais projetos" ---------- */
+
+/* Os projetos extras participam da mesma grade (display: contents).
+   Sem JavaScript tudo fica visível e o botão não aparece. */
+.portfolio-extra { display: contents; }
+.portfolio-extra[hidden] { display: none; }
+
+.portfolio-toggle { display: none; }
+.portfolio-grid.js-ready .portfolio-toggle { display: inline-flex; }
+
+/* Botão simples (celular, tablet e depois de expandido): centralizado abaixo dos cards */
+.portfolio-toggle {
+  grid-column: 1 / -1;
+  justify-self: center;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  padding: 14px 28px;
+  border: 1.5px solid var(--accent-light);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent-light);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.portfolio-toggle:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.portfolio-toggle:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* Qual texto aparece em cada estado */
+.pt-card,
+.pt-more,
+.pt-less { display: none; }
+
+.portfolio-toggle[aria-expanded="false"] .pt-more { display: inline; }
+.portfolio-toggle[aria-expanded="true"] .pt-less { display: inline; }
+
+/* Desktop (3 colunas), recolhido: o botão vira um card no 6º espaço da grade */
+@media (min-width: 861px) {
+  .portfolio-toggle[aria-expanded="false"] {
+    grid-column: auto;
+    justify-self: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 0;
+    padding: 28px;
+    border: 1.5px dashed var(--accent-light);
+    border-radius: var(--radius);
+    background: rgba(139, 92, 246, 0.06);
+    color: var(--ink);
+    text-align: center;
+  }
+
+  .portfolio-toggle[aria-expanded="false"]:hover {
+    transform: translateY(-4px);
+    border-style: solid;
+    border-color: var(--accent-light);
+    background: rgba(139, 92, 246, 0.14);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .portfolio-toggle[aria-expanded="false"] .pt-more { display: none; }
+  .portfolio-toggle[aria-expanded="false"] .pt-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+}
+
+.pt-count {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.pt-action {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-light);
+}
+
+/* Entrada e saída suave dos projetos extras */
+.portfolio-grid.js-ready .portfolio-extra:not([hidden]) .proj-card {
+  animation: proj-in 0.45s ease backwards;
+}
+
+.portfolio-extra .proj-card:nth-child(2) { animation-delay: 70ms; }
+.portfolio-extra .proj-card:nth-child(3) { animation-delay: 140ms; }
+.portfolio-extra .proj-card:nth-child(4) { animation-delay: 210ms; }
+
+.portfolio-grid.js-ready .portfolio-extra.is-closing .proj-card {
+  animation: proj-out 0.28s ease forwards;
+  animation-delay: 0ms;
+}
+
+@keyframes proj-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes proj-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-grid .portfolio-extra .proj-card { animation: none !important; }
+  .portfolio-toggle { transition: none; }
+}
+
 /* ---------- Contato ---------- */
 .contato {
   background: var(--panel);
@@ -489,8 +847,173 @@ footer {
   margin: 0;
 }
 
+/* ---------- Página "Por que automatizar" ---------- */
+
+/* texto de abertura um pouco mais largo (é mais longo que o da outra página) */
+.hero-lead { max-width: 660px; }
+
+/* faixa de destaque com uma frase só */
+.statement-band { padding: 80px 0; }
+
+.statement {
+  margin: 0;
+  font-size: clamp(1.6rem, 3.8vw, 2.5rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.section-head-wide { max-width: 680px; }
+
+/* ícone simples dentro de um círculo */
+.point-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+}
+
+.point-icon svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* pontos em cards (2 x 2) */
+.point-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 48px;
+}
+
+.point-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-line);
+  border-radius: var(--radius);
+  padding: 32px 28px;
+  box-shadow: var(--shadow);
+}
+
+.point-card .point-icon { margin-bottom: 18px; }
+
+.point-card .point-text {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: var(--card-ink);
+}
+
+/* título à esquerda e lista com ícones à direita */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.split-head h2 {
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  font-weight: 800;
+}
+
+.split-head p {
+  margin: 14px 0 0;
+  max-width: 46ch;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+}
+
+.point-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.point-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+}
+
+.point-list li:last-child { border-bottom: 1px solid var(--line); }
+
+.point-list .point-icon {
+  background: rgba(139, 92, 246, 0.14);
+  color: var(--accent-light);
+}
+
+.point-list .point-text {
+  margin: 0;
+  padding-top: 8px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* texto mais longo dentro do painel de contato */
+.contato-text p {
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 900px) {
+  .split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    gap: 72px;
+  }
+}
+
+@media (max-width: 700px) {
+  .point-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .statement-band { padding: 56px 0; }
+}
+
+/* link discreto dentro dos cards de serviços (página inicial) */
+#servicos .servico-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.servico-link {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.servico-link:hover { text-decoration: underline; }
+
+.servico-link:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 /* ---------- Responsive ---------- */
-@media (max-width: 900px) {
+/* o menu tem 5 links: abaixo de 1024px ele vira hambúrguer para não ficar apertado */
+@media (max-width: 1024px) {
   .nav-links,
   .nav-cta.desktop-only { display: none; }
 

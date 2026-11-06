@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Snippet: chat de WhatsApp com atendente de IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!--
+  SNIPPET PARA REAPROVEITAR: conversa animada de WhatsApp com atendente de IA.
+
+  Era o chat do hero da página inicial (removido do site). Este arquivo é autônomo:
+  abra no navegador para ver funcionando.
+
+  COMO USAR EM OUTRA PÁGINA
+  1. Copie o bloco "HTML" (a <div class="hero-demo">) para onde o chat deve aparecer.
+  2. Copie o bloco "CSS" para o styles.css (ou um <style>) da página.
+  3. Copie o bloco "JS" para antes do </body>.
+  4. As variáveis de cor em :root abaixo já existem no styles.css do site.
+     Se a página usar o styles.css, não precisa copiar o :root.
+
+  COMPORTAMENTO
+  - Sem JavaScript, ou com "reduzir movimento" ativado, a conversa aparece completa e parada.
+  - Com JavaScript: mensagens entram com fade, "digitando" antes de cada resposta,
+    loop com pausa de 4 s; pausa quando a aba está oculta ou o chat sai da tela.
+  - O chat é decorativo (role="img" com aria-label).
+-->
+<style>
+  /* ---------- Variáveis (iguais às do styles.css do site) ---------- */
+  :root {
+    --bg: #0a0a0a;
+    --bg-alt: #111111;
+    --panel: #161616;
+    --ink: #ffffff;
+    --ink-soft: #d4d4d4;
+    --line: rgba(255, 255, 255, 0.1);
+    --accent: #7c3aed;
+    --card-bg: #f5f5f5;
+    --card-ink: #16181c;
+    --card-ink-soft: #4a4f57;
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 48px 24px;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---------- CSS do chat ---------- */
+  .hero-demo {
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .hero-demo-note {
+    margin: 14px 0 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+
+  .chat {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    text-align: left;
+  }
+
+  .chat-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .chat-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+
+  .chat-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+
+  .chat-status {
+    font-size: 0.75rem;
+    line-height: 1.3;
+    color: var(--ink-soft);
+  }
+
+  .chat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 16px 20px;
+  }
+
+  .msg {
+    position: relative;
+    display: flex;
+  }
+
+  .msg-client { justify-content: flex-start; }
+  .msg-agent { justify-content: flex-end; }
+
+  .bubble {
+    max-width: 84%;
+    padding: 10px 14px 8px;
+    border-radius: 18px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+
+  .msg-client .bubble {
+    background: var(--card-bg);
+    color: var(--card-ink);
+    border-bottom-left-radius: 6px;
+  }
+
+  .msg-agent .bubble {
+    background: var(--accent);
+    color: #fff;
+    border-bottom-right-radius: 6px;
+  }
+
+  .time {
+    display: block;
+    margin-top: 4px;
+    text-align: right;
+    font-size: 0.68rem;
+    line-height: 1;
+  }
+
+  .msg-client .time { color: var(--card-ink-soft); }
+  .msg-agent .time { color: #ede9fe; }
+
+  /* Indicador "digitando": só aparece quando o script o ativa */
+  .typing {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+    align-items: center;
+    gap: 5px;
+    padding: 13px 16px;
+    border-radius: 18px;
+    border-bottom-right-radius: 6px;
+    background: var(--accent);
+  }
+
+  .msg.is-typing .typing { display: flex; }
+
+  .typing span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0.4;
+    animation: chat-dot 1.2s ease-in-out infinite;
+  }
+
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes chat-dot {
+    0%, 60%, 100% { opacity: 0.4; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-3px); }
+  }
+
+  /* Estado animado: o script adiciona .chat--anim. Sem ele, a conversa fica completa e parada.
+     As bolhas ficam invisíveis mas ocupam espaço, então a altura do chat é fixa desde o início. */
+  .chat--anim .bubble {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .chat--anim .msg.is-in .bubble {
+    opacity: 1;
+    transform: none;
+  }
+
+  .chat--anim.is-out .bubble {
+    transition-duration: 0.6s;
+  }
+
+  .chat.is-paused .typing span {
+    animation-play-state: paused;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HTML ========== -->
+<div class="hero-demo">
+        <div class="chat" data-hero-chat role="img" aria-label="Exemplo de conversa com um atendente de IA: um cliente pergunta se há atendimento no sábado, e o atendente responde com os horários disponíveis e agenda a avaliação para as 10h30.">
+          <div class="chat-head">
+            <div class="chat-avatar">CE</div>
+            <div>
+              <div class="chat-name">Clínica Exemplo</div>
+              <div class="chat-status">atendente com IA · online 24h</div>
+            </div>
+          </div>
+          <div class="chat-body">
+            <div class="msg msg-client">
+              <div class="bubble">Oi, vocês atendem sábado? Queria marcar uma avaliação.<span class="time">23:42</span></div>
+            </div>
+            <div class="msg msg-agent">
+              <div class="typing"><span></span><span></span><span></span></div>
+              <div class="bubble">Oi! Atendemos sábado das 8h às 12h. Tenho horário às 9h30 e às 10h30. Qual prefere?<span class="time">23:42</span></div>
+            </div>
+            <div class="msg msg-client">
+              <div class="bubble">10h30 está ótimo.<span class="time">23:43</span></div>
+            </div>
+            <div class="msg msg-agent">
+              <div class="typing"><span></span><span></span><span></span></div>
+              <div class="bubble">Agendado para sábado às 10h30. Me passa seu nome completo para eu confirmar?<span class="time">23:43</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="hero-demo-note">Exemplo ilustrativo de atendimento</p>
+      </div>
+
+<!-- ========== JS ========== -->
+<script>
+/* Conversa animada do hero. Sem este script (ou com "reduzir movimento"),
+   o HTML já traz a conversa completa e parada. */
+(function () {
+  var chat = document.querySelector('[data-hero-chat]');
+  if (!chat) return;
+
+  var reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+  if (reduce && reduce.matches) return;
+
+  var rows = Array.prototype.slice.call(chat.querySelectorAll('.msg'));
+  var inView = !('IntersectionObserver' in window);
+  var tabVisible = !document.hidden;
+  var started = false;
+  var stopped = false;
+  var current = null;
+
+  function canRun() { return inView && tabVisible && !stopped; }
+
+  /* Espera que não conta o tempo em que a animação está pausada */
+  function sleep(ms) {
+    return new Promise(function (resolve) {
+      var remaining = ms, startedAt = 0, timer = null, finished = false;
+      var s = {
+        resume: function () {
+          if (timer || finished) return;
+          startedAt = Date.now();
+          timer = setTimeout(finish, remaining);
+        },
+        pause: function () {
+          if (!timer) return;
+          clearTimeout(timer);
+          timer = null;
+          remaining -= Date.now() - startedAt;
+        }
+      };
+      function finish() { finished = true; timer = null; current = null; resolve(); }
+      current = s;
+      if (canRun()) s.resume();
+    });
+  }
+
+  function showAll() {
+    chat.classList.remove('chat--anim', 'is-out', 'is-paused');
+    rows.forEach(function (r) { r.classList.remove('is-in', 'is-typing'); });
+  }
+
+  function resetChat() {
+    rows.forEach(function (r) { r.classList.remove('is-in', 'is-typing'); });
+  }
+
+  async function run() {
+    try {
+      while (!stopped) {
+        resetChat();
+        await sleep(600);
+        for (var i = 0; i < rows.length && !stopped; i++) {
+          var row = rows[i];
+          if (row.classList.contains('msg-agent')) {
+            row.classList.add('is-typing');
+            await sleep(1200);
+            row.classList.remove('is-typing');
+          }
+          row.classList.add('is-in');
+          if (i < rows.length - 1) await sleep(1300);
+        }
+        await sleep(4000);
+        chat.classList.add('is-out');
+        rows.forEach(function (r) { r.classList.remove('is-in'); });
+        await sleep(700);
+        chat.classList.remove('is-out');
+        await sleep(400);
+      }
+    } catch (e) {
+      showAll();
+    }
+  }
+
+  function update() {
+    chat.classList.toggle('is-paused', !canRun());
+    if (current) { canRun() ? current.resume() : current.pause(); }
+    if (!started && canRun()) { started = true; run(); }
+  }
+
+  try {
+    chat.classList.add('chat--anim');
+    resetChat();
+
+    document.addEventListener('visibilitychange', function () {
+      tabVisible = !document.hidden;
+      update();
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        inView = entries[entries.length - 1].isIntersecting;
+        update();
+      }, { threshold: 0.25 }).observe(chat);
+    }
+
+    if (reduce && reduce.addEventListener) {
+      reduce.addEventListener('change', function () {
+        if (reduce.matches) { stopped = true; showAll(); if (current) current.pause(); }
+      });
+    }
+
+    update();
+  } catch (e) {
+    showAll();
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -20,9 +20,9 @@
       <ul class="nav-links">
         <li><a href="#sobre">Sobre</a></li>
         <li><a href="#servicos">Serviços</a></li>
-        <li><a href="importancia-de-um-site/index.html"><span class="nav-highlight">Por que ter um site</span></a></li>
+        <li><a href="importancia-de-um-site/index.html">Por que ter um site</a></li>
+        <li><a href="importancia-de-automacao/index.html"><span class="nav-highlight">Por que automatizar</span></a></li>
         <li><a href="#portfolio">Portfólio</a></li>
-        <li><a href="#contato">Contato</a></li>
       </ul>
     </nav>
     <a href="https://wa.me/5547992071256" target="_blank" rel="noopener" class="nav-cta desktop-only">Falar no WhatsApp</a>
@@ -33,9 +33,9 @@
   <div class="mobile-menu">
     <a href="#sobre">Sobre</a>
     <a href="#servicos">Serviços</a>
-    <a href="importancia-de-um-site/index.html"><span class="nav-highlight">Por que ter um site</span></a>
+    <a href="importancia-de-um-site/index.html">Por que ter um site</a>
+    <a href="importancia-de-automacao/index.html"><span class="nav-highlight">Por que automatizar</span></a>
     <a href="#portfolio">Portfólio</a>
-    <a href="#contato">Contato</a>
     <a href="https://wa.me/5547992071256" target="_blank" rel="noopener">Falar no WhatsApp</a>
   </div>
 </header>
@@ -43,7 +43,213 @@
 <main id="top">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero hero-has-code">
+    <div class="hero-code" aria-hidden="true">
+      <div class="hero-code-track">
+        <div class="code-block">
+          <pre class="code-col code-col-a"><code><span class="k">&lt;section</span> class=<span class="s">"reservas"</span> id=<span class="s">"reservas"</span><span class="k">&gt;</span>
+  <span class="k">&lt;div</span> class=<span class="s">"wrap"</span><span class="k">&gt;</span>
+    <span class="k">&lt;h2&gt;</span>Reserve sua mesa<span class="k">&lt;/h2&gt;</span>
+    <span class="k">&lt;form</span> id=<span class="s">"form-reserva"</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> name=<span class="s">"nome"</span> required<span class="k">&gt;</span>
+      <span class="k">&lt;input</span> name=<span class="s">"pessoas"</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> name=<span class="s">"data"</span> type=<span class="s">"date"</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span> class=<span class="s">"btn"</span><span class="k">&gt;</span>
+        Enviar reserva
+      <span class="k">&lt;/button&gt;</span>
+    <span class="k">&lt;/form&gt;</span>
+    <span class="k">&lt;p</span> class=<span class="s">"aviso"</span> hidden<span class="k">&gt;</span>
+      Reserva enviada!
+    <span class="k">&lt;/p&gt;</span>
+  <span class="k">&lt;/div&gt;</span>
+<span class="k">&lt;/section&gt;</span>
+
+<span class="c">/* estilos da seção */</span>
+.reservas {
+  padding: <span class="n">96px</span> <span class="n">24px</span>;
+  background: <span class="s">var(--bg-alt)</span>;
+}
+
+.reservas h2 {
+  font-size: <span class="n">2rem</span>;
+  font-weight: <span class="n">800</span>;
+}
+
+.btn {
+  border-radius: <span class="n">999px</span>;
+  background: <span class="s">var(--accent)</span>;
+  transition: transform <span class="n">.2s</span>;
+}</code></pre>
+          <pre class="code-col code-col-b"><code><span class="c">// dados de um pedido</span>
+<span class="k">const</span> pedido = {
+  id: <span class="n">1042</span>,
+  cliente: <span class="s">"Maria Souza"</span>,
+  itens: [
+    { nome: <span class="s">"Lasanha"</span>, qtd: <span class="n">2</span> },
+    { nome: <span class="s">"Tiramisù"</span>, qtd: <span class="n">1</span> },
+  ],
+  total: <span class="n">110.3</span>,
+  pago: <span class="k">false</span>,
+};
+
+<span class="k">const</span> API = <span class="s">"/api/clientes"</span>;
+
+<span class="k">async function</span> cadastrarCliente(dados) {
+  <span class="k">const</span> res = <span class="k">await</span> fetch(API, {
+    method: <span class="s">"POST"</span>,
+    headers: {
+      <span class="s">"Content-Type"</span>: <span class="s">"application/json"</span>,
+    },
+    body: JSON.stringify(dados),
+  });
+  <span class="k">if</span> (!res.ok) {
+    <span class="k">throw new</span> Error(<span class="s">"Falha"</span>);
+  }
+  <span class="k">return</span> res.json();
+}
+
+<span class="k">const</span> novo = <span class="k">await</span> cadastrarCliente({
+  nome: <span class="s">"Maria Souza"</span>,
+  telefone: <span class="s">"(47) 0000-0000"</span>,
+});
+console.log(novo.id);</code></pre>
+          <pre class="code-col code-col-c"><code><span class="c">// cardápio do restaurante</span>
+<span class="k">const</span> cardapio = [
+  { nome: <span class="s">"Lasanha"</span>, preco: <span class="n">42.9</span> },
+  { nome: <span class="s">"Risoto"</span>, preco: <span class="n">48</span> },
+  { nome: <span class="s">"Tiramisù"</span>, preco: <span class="n">24.5</span> },
+];
+
+<span class="k">function</span> total(itens) {
+  <span class="k">return</span> itens.reduce((soma, i) => {
+    <span class="k">return</span> soma + i.preco * i.qtd;
+  }, <span class="n">0</span>);
+}
+
+<span class="k">const</span> form = document.querySelector(
+  <span class="s">"#form-reserva"</span>
+);
+
+form.addEventListener(<span class="s">"submit"</span>, (e) => {
+  e.preventDefault();
+  enviarReserva(form);
+});
+
+<span class="k">function</span> enviarReserva(form) {
+  <span class="k">const</span> reserva = {
+    nome: form.nome.value,
+    pessoas: Number(form.pessoas.value),
+    data: form.data.value,
+  };
+  <span class="k">return</span> cadastrarCliente(reserva)
+    .then(() => avisar(<span class="s">"Enviada"</span>))
+    .catch(console.error);<span class="code-cursor"></span>
+}
+</code></pre>
+        </div>
+        <div class="code-block">
+          <pre class="code-col code-col-a"><code><span class="k">&lt;section</span> class=<span class="s">"reservas"</span> id=<span class="s">"reservas"</span><span class="k">&gt;</span>
+  <span class="k">&lt;div</span> class=<span class="s">"wrap"</span><span class="k">&gt;</span>
+    <span class="k">&lt;h2&gt;</span>Reserve sua mesa<span class="k">&lt;/h2&gt;</span>
+    <span class="k">&lt;form</span> id=<span class="s">"form-reserva"</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> name=<span class="s">"nome"</span> required<span class="k">&gt;</span>
+      <span class="k">&lt;input</span> name=<span class="s">"pessoas"</span><span class="k">&gt;</span>
+      <span class="k">&lt;input</span> name=<span class="s">"data"</span> type=<span class="s">"date"</span><span class="k">&gt;</span>
+      <span class="k">&lt;button</span> class=<span class="s">"btn"</span><span class="k">&gt;</span>
+        Enviar reserva
+      <span class="k">&lt;/button&gt;</span>
+    <span class="k">&lt;/form&gt;</span>
+    <span class="k">&lt;p</span> class=<span class="s">"aviso"</span> hidden<span class="k">&gt;</span>
+      Reserva enviada!
+    <span class="k">&lt;/p&gt;</span>
+  <span class="k">&lt;/div&gt;</span>
+<span class="k">&lt;/section&gt;</span>
+
+<span class="c">/* estilos da seção */</span>
+.reservas {
+  padding: <span class="n">96px</span> <span class="n">24px</span>;
+  background: <span class="s">var(--bg-alt)</span>;
+}
+
+.reservas h2 {
+  font-size: <span class="n">2rem</span>;
+  font-weight: <span class="n">800</span>;
+}
+
+.btn {
+  border-radius: <span class="n">999px</span>;
+  background: <span class="s">var(--accent)</span>;
+  transition: transform <span class="n">.2s</span>;
+}</code></pre>
+          <pre class="code-col code-col-b"><code><span class="c">// dados de um pedido</span>
+<span class="k">const</span> pedido = {
+  id: <span class="n">1042</span>,
+  cliente: <span class="s">"Maria Souza"</span>,
+  itens: [
+    { nome: <span class="s">"Lasanha"</span>, qtd: <span class="n">2</span> },
+    { nome: <span class="s">"Tiramisù"</span>, qtd: <span class="n">1</span> },
+  ],
+  total: <span class="n">110.3</span>,
+  pago: <span class="k">false</span>,
+};
+
+<span class="k">const</span> API = <span class="s">"/api/clientes"</span>;
+
+<span class="k">async function</span> cadastrarCliente(dados) {
+  <span class="k">const</span> res = <span class="k">await</span> fetch(API, {
+    method: <span class="s">"POST"</span>,
+    headers: {
+      <span class="s">"Content-Type"</span>: <span class="s">"application/json"</span>,
+    },
+    body: JSON.stringify(dados),
+  });
+  <span class="k">if</span> (!res.ok) {
+    <span class="k">throw new</span> Error(<span class="s">"Falha"</span>);
+  }
+  <span class="k">return</span> res.json();
+}
+
+<span class="k">const</span> novo = <span class="k">await</span> cadastrarCliente({
+  nome: <span class="s">"Maria Souza"</span>,
+  telefone: <span class="s">"(47) 0000-0000"</span>,
+});
+console.log(novo.id);</code></pre>
+          <pre class="code-col code-col-c"><code><span class="c">// cardápio do restaurante</span>
+<span class="k">const</span> cardapio = [
+  { nome: <span class="s">"Lasanha"</span>, preco: <span class="n">42.9</span> },
+  { nome: <span class="s">"Risoto"</span>, preco: <span class="n">48</span> },
+  { nome: <span class="s">"Tiramisù"</span>, preco: <span class="n">24.5</span> },
+];
+
+<span class="k">function</span> total(itens) {
+  <span class="k">return</span> itens.reduce((soma, i) => {
+    <span class="k">return</span> soma + i.preco * i.qtd;
+  }, <span class="n">0</span>);
+}
+
+<span class="k">const</span> form = document.querySelector(
+  <span class="s">"#form-reserva"</span>
+);
+
+form.addEventListener(<span class="s">"submit"</span>, (e) => {
+  e.preventDefault();
+  enviarReserva(form);
+});
+
+<span class="k">function</span> enviarReserva(form) {
+  <span class="k">const</span> reserva = {
+    nome: form.nome.value,
+    pessoas: Number(form.pessoas.value),
+    data: form.data.value,
+  };
+  <span class="k">return</span> cadastrarCliente(reserva)
+    .then(() => avisar(<span class="s">"Enviada"</span>))
+    .catch(console.error);<span class="code-cursor"></span>
+}
+</code></pre>
+        </div>
+      </div>
+    </div>
     <div class="wrap">
       <div class="hero-photo">
         <img src="assets/foto.jpeg" alt="Foto de Bruno Warmeling">
@@ -58,12 +264,15 @@
   </section>
 
   <!-- SOBRE -->
-  <section class="sobre" id="sobre">
+  <section class="sobre about" id="sobre">
     <div class="wrap">
-      <div class="sobre-inner">
-        <span class="eyebrow">Sobre</span>
-        <h2>Quem desenvolve o seu projeto</h2>
-        <p>Sou desenvolvedor e crio sites profissionais que ajudam empresas a vender mais e a se apresentarem com credibilidade na internet. Trabalho de perto com cada cliente para entender o negócio antes de escrever a primeira linha de código. Atualmente também estou ampliando minha atuação para sistemas personalizados (CRMs, painéis de gestão e ferramentas internas), pensados para dar mais controle e escala à operação de cada cliente.</p>
+      <span class="eyebrow" data-reveal>Sobre</span>
+      <div class="about-grid">
+        <h2 class="about-title" data-reveal>Tecnologia <span class="about-accent">sob medida</span> para a operação da sua empresa.</h2>
+        <div class="about-body">
+          <p class="about-lead" data-reveal>Sou Bruno Warmeling, desenvolvedor. Projeto sites, sistemas e automações para empresas que querem atender melhor e operar com mais controle.</p>
+          <p class="about-closing" data-reveal>Todo projeto começa com uma conversa para entender o seu negócio, antes da primeira linha de código.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -83,6 +292,17 @@
         <div class="servico-card">
           <h3>Sistemas sob medida</h3>
           <p>Sistemas personalizados como CRMs e ferramentas internas para organizar e escalar o negócio do cliente, feitos sob medida para a rotina de cada empresa.</p>
+          <a class="servico-link" href="importancia-de-automacao/index.html">Entenda por que automatizar</a>
+        </div>
+        <div class="servico-card">
+          <h3>Agentes de IA personalizados</h3>
+          <p>Atendentes e assistentes com inteligência artificial treinados com as informações do seu negócio: preços, horários, cardápio, regras e dúvidas frequentes. Respondem seus clientes a qualquer hora e encaminham para você o que precisar de atenção humana.</p>
+          <a class="servico-link" href="importancia-de-automacao/index.html">Entenda por que automatizar</a>
+        </div>
+        <div class="servico-card">
+          <h3>Automações para WhatsApp, Instagram e <span style="white-space: nowrap;">e-mail</span></h3>
+          <p>Respostas, agendamentos, lembretes, orçamentos e avisos que hoje você faz manualmente passam a acontecer sozinhos, nos canais que seus clientes já usam.</p>
+          <a class="servico-link" href="importancia-de-automacao/index.html">Entenda por que automatizar</a>
         </div>
       </div>
     </div>
@@ -126,22 +346,103 @@
         </div>
 
         <div class="proj-card">
-          <div class="proj-cat">Chopp e Cozinha · Jaraguá do Sul/SC</div>
-          <h3>Das Dorf</h3>
-          <p class="proj-desc">Site para choperia/restaurante, com cardápio e sistema de reservas.</p>
-          <a href="https://dasdorf.vercel.app/" target="_blank" rel="noopener" class="proj-link">Ver site ↗</a>
+          <div class="proj-cat">Espaço de Eventos · Joinville/SC</div>
+          <h3>Espaço Jardim Benjamin</h3>
+          <p class="proj-desc">Site para espaço de eventos ao ar livre com piscina e jardim, com galeria de eventos, passo a passo de reserva e contato via WhatsApp.</p>
+          <a href="https://espacojardimbenjamin.vercel.app/" target="_blank" rel="noopener" class="proj-link">Ver site ↗</a>
         </div>
 
-        <div class="proj-card">
-          <div class="proj-cat">Clínica de Fisioterapia Esportiva · Joinville/SC</div>
-          <h3>FisioPro Esportiva</h3>
-          <p class="proj-desc">Site para clínica de fisioterapia esportiva de alta performance, com seções de serviços e agendamento via WhatsApp.</p>
-          <a href="https://fisiopro-esportiva.vercel.app/" target="_blank" rel="noopener" class="proj-link">Ver site ↗</a>
+        <!-- Projetos extras: o script os esconde atrás do botão. Sem JavaScript, todos ficam visíveis. -->
+        <div id="projetos-extras" class="portfolio-extra">
+
+          <div class="proj-card">
+            <div class="proj-cat">Chopp e Cozinha · Jaraguá do Sul/SC</div>
+            <h3>Das Dorf</h3>
+            <p class="proj-desc">Site para choperia/restaurante, com cardápio e sistema de reservas.</p>
+            <a href="https://dasdorf.vercel.app/" target="_blank" rel="noopener" class="proj-link">Ver site ↗</a>
+          </div>
+
+          <div class="proj-card">
+            <div class="proj-cat">Trattoria Italiana · São Bento do Sul/SC</div>
+            <h3>Luzia Trattoria</h3>
+            <p class="proj-desc">Site para trattoria italiana, com destaques do cardápio com fotos, galeria do espaço, horários e reservas via WhatsApp.</p>
+            <a href="https://luziatrattoria.vercel.app/" target="_blank" rel="noopener" class="proj-link">Ver site ↗</a>
+          </div>
+
+          <div class="proj-card">
+            <div class="proj-cat">Locação e Decoração para Festas · Barra Velha/SC</div>
+            <h3>Florarte Locações</h3>
+            <p class="proj-desc">Site para espaço de eventos e decoração temática, com galeria por tipo de festa, informações do salão e do buffet, e reserva em etapas via WhatsApp.</p>
+            <a href="https://florartelocacoes.vercel.app/" target="_blank" rel="noopener" class="proj-link">Ver site ↗</a>
+          </div>
+
+          <div class="proj-card">
+            <div class="proj-cat">Clínica de Fisioterapia Esportiva · Joinville/SC</div>
+            <h3>FisioPro Esportiva</h3>
+            <p class="proj-desc">Site para clínica de fisioterapia esportiva de alta performance, com seções de serviços e agendamento via WhatsApp.</p>
+            <a href="https://fisiopro-esportiva.vercel.app/" target="_blank" rel="noopener" class="proj-link">Ver site ↗</a>
+          </div>
+
         </div>
+
+        <button type="button" class="portfolio-toggle" aria-expanded="false" aria-controls="projetos-extras">
+          <span class="pt-card"><span class="pt-count">+4 projetos</span><span class="pt-action">Ver mais <span aria-hidden="true">↓</span></span></span>
+          <span class="pt-more">Ver mais projetos <span aria-hidden="true">↓</span></span>
+          <span class="pt-less">Ver menos <span aria-hidden="true">↑</span></span>
+        </button>
 
       </div>
     </div>
   </section>
+
+  <script>
+  /* Portfólio: mostra 5 projetos e guarda 4 atrás do botão "Ver mais projetos".
+     Sem JavaScript (ou se algo falhar), os 9 projetos ficam visíveis e o botão nem aparece. */
+  (function () {
+    var grid = document.querySelector('.portfolio-grid');
+    var extra = document.getElementById('projetos-extras');
+    var btn = grid && grid.querySelector('.portfolio-toggle');
+    if (!grid || !extra || !btn) return;
+
+    var reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    var timer = null;
+
+    function reduced() { return !!(reduce && reduce.matches); }
+
+    function open() {
+      clearTimeout(timer);
+      extra.classList.remove('is-closing');
+      extra.hidden = false;
+      btn.setAttribute('aria-expanded', 'true');
+    }
+
+    function finishClose() {
+      extra.hidden = true;
+      extra.classList.remove('is-closing');
+      // se o botão ficou fora da tela, traz de volta (sem rolar se já estiver visível)
+      btn.scrollIntoView({ block: 'nearest', behavior: reduced() ? 'auto' : 'smooth' });
+    }
+
+    function close() {
+      btn.setAttribute('aria-expanded', 'false');
+      if (reduced()) { finishClose(); return; }
+      extra.classList.add('is-closing');
+      timer = setTimeout(finishClose, 320);
+    }
+
+    try {
+      extra.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      grid.classList.add('js-ready');
+      btn.addEventListener('click', function () {
+        if (btn.getAttribute('aria-expanded') === 'true') close(); else open();
+      });
+    } catch (e) {
+      extra.hidden = false;
+      grid.classList.remove('js-ready');
+    }
+  })();
+  </script>
 
   <!-- CONTATO -->
   <section id="contato">
@@ -161,6 +462,95 @@
 <footer>
   Bruno Warmeling: Desenvolvimento Web · 2026
 </footer>
+
+<script>
+/* Seção Sobre: entrada suave (fade + pequeno deslize) quando ela aparece na tela.
+   Não roda com "reduzir movimento" nem sem IntersectionObserver: o texto fica visível normalmente. */
+(function () {
+  var about = document.getElementById('sobre');
+  if (!about || !('IntersectionObserver' in window)) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var items = about.querySelectorAll('[data-reveal]');
+  Array.prototype.forEach.call(items, function (el, i) {
+    el.style.setProperty('--reveal-delay', (i * 120) + 'ms');
+  });
+  about.classList.add('reveal-ready');
+
+  var io = new IntersectionObserver(function (entries) {
+    if (entries.some(function (e) { return e.isIntersecting; })) {
+      about.classList.add('is-visible');
+      io.disconnect();
+    }
+  }, { threshold: 0.15 });
+  io.observe(about);
+})();
+</script>
+
+<script>
+/* Fundo de código do hero: preenche a largura toda e pausa quando não está visível. */
+(function () {
+  var hero = document.querySelector('.hero-has-code');
+  var code = hero && hero.querySelector('.hero-code');
+  if (!code) return;
+
+  /* 1) Repete as colunas até passarem da borda direita, em qualquer largura de tela */
+  var blocks = Array.prototype.slice.call(code.querySelectorAll('.code-block'));
+  var lastWidth = 0;
+
+  function fill() {
+    var width = hero.clientWidth;
+    if (!width || width === lastWidth) return;
+    lastWidth = width;
+    code.classList.add('is-filled'); // alinha as colunas à esquerda antes de medir
+    blocks.forEach(function (block) {
+      Array.prototype.slice.call(block.querySelectorAll('[data-clone]')).forEach(function (c) {
+        c.parentNode.removeChild(c);
+      });
+      var originals = Array.prototype.slice.call(block.querySelectorAll('.code-col'));
+      for (var i = 0; i < 40 && block.scrollWidth <= width; i++) {
+        var clone = originals[i % originals.length].cloneNode(true);
+        clone.setAttribute('data-clone', '');
+        block.appendChild(clone);
+      }
+    });
+  }
+
+  fill();
+  window.addEventListener('load', function () { lastWidth = 0; fill(); });
+
+  var timer = null;
+  function scheduleFill() {
+    clearTimeout(timer);
+    timer = setTimeout(fill, 150);
+  }
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(scheduleFill).observe(hero);
+  } else {
+    window.addEventListener('resize', scheduleFill);
+  }
+
+  /* 2) Pausa quando o hero sai da tela ou a aba fica oculta */
+  var inView = true;
+  var tabVisible = !document.hidden;
+
+  function update() {
+    code.classList.toggle('is-paused', !(inView && tabVisible));
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    tabVisible = !document.hidden;
+    update();
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      inView = entries[entries.length - 1].isIntersecting;
+      update();
+    }).observe(hero);
+  }
+})();
+</script>
 
 </body>
 </html>
